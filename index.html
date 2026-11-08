@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎈 두근두근 대형 초등 경품 뽑기 (2자리 버전) 🎈</title>
+    <title>김천다수초 경품뽑기</title>
     <!-- 폭죽 효과 라이브러리 -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
@@ -105,16 +105,6 @@
         }
         .btn-reset-target:hover { background-color: #0369a1; }
 
-        .target-info-badge {
-            background-color: #dbeafe;
-            color: #1e40af;
-            font-size: 1.1rem;
-            padding: 4px 15px;
-            border-radius: 20px;
-            margin-top: 5px;
-            border: 2px solid #93c5fd;
-        }
-
         .list-title {
             color: #047857;
             font-size: clamp(1.4rem, 2.3vw, 2.2rem);
@@ -125,28 +115,28 @@
             white-space: nowrap;
         }
 
-        /* 2자리용 슬롯머신 영역 */
+        /* 슬롯머신 영역 */
         .slot-machine {
             background-color: #fef08a;
             border: 6px solid #f59e0b;
             border-radius: 25px;
-            padding: 20px 40px;
+            padding: 20px 20px;
             display: flex;
             justify-content: center;
-            gap: 25px;
+            gap: 15px;
             box-shadow: inset 0 6px 12px rgba(0,0,0,0.15);
             width: 100%;
-            max-width: 600px;
+            max-width: 700px;
             flex: 1;
             align-items: center;
-            margin: 10px 0;
+            margin: 15px 0;
         }
 
         .slot-column {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             flex: 1;
             height: 100%;
             justify-content: center;
@@ -154,15 +144,15 @@
 
         .digit-box {
             width: 100%;
-            max-width: 180px;
-            height: 180px;
+            max-width: 150px;
+            height: 160px;
             background: white;
             border: 6px solid #3b82f6;
-            border-radius: 28px;
+            border-radius: 25px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: clamp(4.5rem, 8vw, 7.5rem);
+            font-size: clamp(3.5rem, 6vw, 6.5rem);
             font-weight: bold;
             color: #1e3a8a;
             box-shadow: inset 0 5px 10px rgba(0,0,0,0.15), 0 6px 0 #2563eb;
@@ -183,14 +173,14 @@
             background-color: #f97316;
             color: white;
             font-family: 'Jua', sans-serif;
-            font-size: clamp(1rem, 1.4vw, 1.3rem);
-            padding: 10px 4px;
+            font-size: clamp(0.9rem, 1.2vw, 1.2rem);
+            padding: 8px 4px;
             border: none;
-            border-radius: 15px;
+            border-radius: 12px;
             cursor: pointer;
             box-shadow: 0 4px 0 #c2410c;
             width: 100%;
-            max-width: 180px;
+            max-width: 150px;
             white-space: nowrap;
             transition: all 0.1s ease;
         }
@@ -287,8 +277,8 @@
         }
 
         .winner-code {
-            font-size: 1.5em;
-            letter-spacing: 4px;
+            font-size: 1.3em;
+            letter-spacing: 3px;
             color: #047857;
             font-weight: bold;
             white-space: nowrap;
@@ -328,7 +318,6 @@
             text-overflow: ellipsis;
         }
 
-        /* 당첨 팝업 모달 */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -362,13 +351,13 @@
 
         .modal-title { font-size: clamp(2rem, 4vw, 2.8rem); color: #d97706; margin-bottom: 10px; white-space: nowrap; }
         .modal-code {
-            font-size: clamp(4rem, 10vw, 6.5rem);
+            font-size: clamp(3.5rem, 8vw, 5.5rem);
             color: #1d4ed8;
-            letter-spacing: 8px;
+            letter-spacing: 6px;
             background: #eff6ff;
             border: 4px dashed #3b82f6;
             border-radius: 20px;
-            padding: 10px 30px;
+            padding: 10px 20px;
             margin: 15px 0;
             display: inline-block;
             white-space: nowrap;
@@ -387,7 +376,7 @@
             white-space: nowrap;
         }
 
-        /* 📋 스마트폰 전용 전체 당첨자 팝업 모달 */
+        /* 📋 전체 당첨자 전용 팝업 모달 */
         .all-winners-modal-overlay {
             display: none;
             position: fixed;
@@ -426,7 +415,6 @@
             align-content: flex-start;
         }
 
-        /* 스마트폰 팝업 내부 당첨 번호 카드 (세로: 2열) */
         .all-winners-modal-list .winner-item {
             background-color: #f0fdf4;
             border: 2px solid #bbf7d0;
@@ -441,14 +429,13 @@
             display: none;
         }
         .all-winners-modal-list .winner-code {
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             letter-spacing: 3px;
             color: #065f46;
         }
 
         /* 📱 스마트폰 전용 세부 미디어 쿼리 */
         @media (max-width: 900px) {
-            /* 스마트폰 가로 모드 */
             @media (orientation: landscape) {
                 .right-section {
                     display: none; 
@@ -461,35 +448,33 @@
                     min-height: auto;
                 }
                 .slot-machine {
-                    padding: 8px 15px;
+                    padding: 8px 10px;
                     margin: 5px 0;
-                    gap: 15px;
+                    gap: 10px;
                 }
                 .digit-box {
-                    height: 100px;
-                    font-size: 3.5rem;
+                    height: 90px;
+                    font-size: 2.8rem;
                     border-width: 4px;
                 }
                 .btn-stop {
-                    font-size: 0.85rem;
-                    padding: 5px 0;
+                    font-size: 0.75rem;
+                    padding: 4px 0;
                 }
                 h1 {
                     font-size: 1.5rem;
                     margin-bottom: 2px;
                 }
-                /* 가로모드 팝업에서는 5명씩 배치 (5열) */
                 .all-winners-modal-list .winner-item {
                     width: calc(20% - 7px);
                     padding: 8px 2px;
                 }
                 .all-winners-modal-list .winner-code {
-                    font-size: 1.2rem;
-                    letter-spacing: 2px;
+                    font-size: 1.1rem;
+                    letter-spacing: 1px;
                 }
             }
 
-            /* 스마트폰 세로 모드 */
             @media (orientation: portrait) {
                 .app-layout {
                     flex-direction: column-reverse; 
@@ -508,19 +493,19 @@
                 }
 
                 .digit-box {
-                    height: 110px;
-                    font-size: 3.8rem;
+                    height: 105px;
+                    font-size: 3.2rem;
                     border-width: 4px;
                 }
 
                 .slot-machine {
                     padding: 10px;
-                    gap: 12px;
+                    gap: 10px;
                 }
 
                 .btn-stop {
-                    font-size: 0.9rem;
-                    padding: 6px 0;
+                    font-size: 0.85rem;
+                    padding: 5px 0;
                 }
             }
         }
@@ -532,27 +517,17 @@
     <!-- 좌측: 슬롯머신 영역 -->
     <div class="left-section">
         <div class="header-box">
-            <h1>🎁 경품 추첨 🎁</h1>
+            <h1>두근두근 경품 추첨</h1>
             <button class="btn-reset-target" onclick="promptMaxTarget()">⚙️ 인원 재설정</button>
         </div>
-        
-        <div class="target-info-badge" id="targetBadge">대상: 1 ~ 30번</div>
 
-        <div class="slot-machine">
-            <div class="slot-column">
-                <div class="digit-box" id="digit1">?</div>
-                <button class="btn-stop" id="stopBtn1" onclick="stopDigit(0)" disabled>1번째 멈춤</button>
-            </div>
-            <div class="slot-column">
-                <div class="digit-box" id="digit2">?</div>
-                <button class="btn-stop" id="stopBtn2" onclick="stopDigit(1)" disabled>2번째 멈춤</button>
-            </div>
+        <div class="slot-machine" id="slotMachineContainer">
+            <!-- 자릿수에 따라 동적으로 슬롯 칸이 생성됩니다 -->
         </div>
 
         <div class="control-panel">
             <button class="btn-draw" id="drawBtn" onclick="startSlot()">추첨 시작!</button>
             <button class="btn-all-stop" id="allStopBtn" onclick="stopAllDigits()" disabled>한꺼번에 멈춤</button>
-            <!-- 가로모드 전용 당첨자 모두보기 버튼 -->
             <button class="btn-view-all-mobile" onclick="openAllWinnersModal()">당첨자 모두 보기</button>
         </div>
     </div>
@@ -594,21 +569,37 @@
 
 <script>
     let maxTarget = 30; // 기본 인원수
+    let digitCount = 2;   // 기본 자릿수 (2자리 또는 3자리)
+
+    function updateDigitStructure() {
+        digitCount = maxTarget >= 100 ? 3 : 2;
+        const container = document.getElementById('slotMachineContainer');
+        container.innerHTML = '';
+
+        for (let i = 0; i < digitCount; i++) {
+            const col = document.createElement('div');
+            col.className = 'slot-column';
+            col.innerHTML = `
+                <div class="digit-box" id="digit${i+1}">?</div>
+                <button class="btn-stop" id="stopBtn${i+1}" onclick="stopDigit(${i})" disabled>${i+1}번째 멈춤</button>
+            `;
+            container.appendChild(col);
+        }
+    }
 
     function promptMaxTarget() {
-        const input = prompt("추첨 대상 전체 인원수를 입력해주세요 (예: 26)", maxTarget);
-        if (input !== null) {
+        const input = prompt("추첨 대상 전체 인원수를 입력해주세요");
+        if (input !== null && input.trim() !== "") {
             const num = parseInt(input.trim(), 10);
-            if (!isNaN(num) && num > 0 && num <= 99) {
+            if (!isNaN(num) && num > 0 && num <= 999) {
                 maxTarget = num;
+                updateDigitStructure();
                 historySet.clear();
                 winnerCount = 0;
                 document.getElementById('winnerList').innerHTML = '';
-                document.getElementById('targetBadge').innerText = `대상: 1 ~ ${maxTarget}번`;
-                document.getElementById('digit1').innerText = '?';
-                document.getElementById('digit2').innerText = '?';
             } else {
-                alert("1부터 99 사이의 숫자를 입력해주세요.");
+                alert("1부터 999 사이의 올바른 숫자를 입력해주세요.");
+                promptMaxTarget();
             }
         }
     }
@@ -777,17 +768,18 @@
     const historySet = new Set();
     let winnerCount = 0;
     let finalNumbers = [];
-    let intervals = [null, null];
-    let isRolling = [false, false];
+    let intervals = [];
+    let isRolling = [];
     let currentStep = 0;
 
-    /* 지정한 대상 인원수(maxTarget) 범위 내에서 2자리 생성 알고리즘 */
     function generateSingleCandidate() {
         const num = Math.floor(Math.random() * maxTarget) + 1; // 1 ~ maxTarget
-        const formatted = String(num).padStart(2, '0');
-        const d1 = parseInt(formatted[0], 10);
-        const d2 = parseInt(formatted[1], 10);
-        return [d1, d2];
+        const formatted = String(num).padStart(digitCount, '0');
+        let arr = [];
+        for (let i = 0; i < digitCount; i++) {
+            arr.push(parseInt(formatted[i], 10));
+        }
+        return arr;
     }
 
     function getUniqueNumbers() {
@@ -817,12 +809,14 @@
         document.getElementById('allStopBtn').disabled = false;
         currentStep = 0;
 
+        intervals = new Array(digitCount).fill(null);
+        isRolling = new Array(digitCount).fill(true);
+
         startBGM();
 
-        for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < digitCount; i++) {
             const box = document.getElementById(`digit${i+1}`);
             box.classList.add('rolling');
-            isRolling[i] = true;
 
             intervals[i] = setInterval(() => {
                 box.innerText = Math.floor(Math.random() * 10);
@@ -848,7 +842,7 @@
 
         currentStep = index + 1;
 
-        if (currentStep < 2) {
+        if (currentStep < digitCount) {
             document.getElementById(`stopBtn${currentStep+1}`).disabled = false;
         } else {
             finishDraw();
@@ -856,7 +850,7 @@
     }
 
     function stopAllDigits() {
-        for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < digitCount; i++) {
             if (isRolling[i]) {
                 clearInterval(intervals[i]);
                 isRolling[i] = false;
@@ -908,6 +902,7 @@
     }
 
     window.onload = function() {
+        updateDigitStructure();
         setTimeout(() => {
             promptMaxTarget();
         }, 300);
