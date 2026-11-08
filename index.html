@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎈 두근두근 대형 초등 경품 뽑기 (2자리 버전) 🎈</title>
+    <!-- 폭죽 효과 라이브러리 -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        body {
+            font-family: 'Jua', '맑은 고딕', sans-serif;
+            background-color: #f0f9ff;
+            background-image: radial-gradient(#bae6fd 2.5px, transparent 2.5px);
+            background-size: 30px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+        }
+
+        /* 메인 레이아웃 (PC 기본: 2단 배치) */
+        .app-layout {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            width: 100%;
+            max-width: 1400px;
+            flex: 1;
+            min-height: calc(100vh - 75px);
+        }
+
+        /* 좌측: 대형 슬롯머신 */
+        .left-section {
+            flex: 1.3;
+            background: white;
+            border: 8px solid #3b82f6;
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 500px;
+            width: 100%;
+        }
+
+        /* 우측: 당첨 명단 (PC 기본) */
+        .right-section {
+            flex: 0.7;
+            background: white;
+            border: 8px solid #10b981;
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            min-height: 500px;
+        }
+
+        .header-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #1d4ed8;
+            font-size: clamp(1.8rem, 3vw, 2.6rem);
+            margin: 0;
+            text-shadow: 2px 2px 0px #bfdbfe;
+            white-space: nowrap;
+        }
+
+        .btn-reset-target {
+            background-color: #0284c7;
+            color: white;
+            font-family: 'Jua', sans-serif;
+            font-size: 0.9rem;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #0369a1;
+            white-space: nowrap;
+        }
+        .btn-reset-target:hover { background-color: #0369a1; }
+
+        .target-info-badge {
+            background-color: #dbeafe;
+            color: #1e40af;
+            font-size: 1.1rem;
+            padding: 4px 15px;
+            border-radius: 20px;
+            margin-top: 5px;
+            border: 2px solid #93c5fd;
+        }
+
+        .list-title {
+            color: #047857;
+            font-size: clamp(1.4rem, 2.3vw, 2.2rem);
+            margin: 0 0 10px 0;
+            text-align: center;
+            border-bottom: 4px dashed #a7f3d0;
+            padding-bottom: 10px;
+            white-space: nowrap;
+        }
+
+        /* 2자리용 슬롯머신 영역 */
+        .slot-machine {
+            background-color: #fef08a;
+            border: 6px solid #f59e0b;
+            border-radius: 25px;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            box-shadow: inset 0 6px 12px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 600px;
+            flex: 1;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .slot-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            height: 100%;
+            justify-content: center;
+        }
+
+        .digit-box {
+            width: 100%;
+            max-width: 180px;
+            height: 180px;
+            background: white;
+            border: 6px solid #3b82f6;
+            border-radius: 28px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: clamp(4.5rem, 8vw, 7.5rem);
+            font-weight: bold;
+            color: #1e3a8a;
+            box-shadow: inset 0 5px 10px rgba(0,0,0,0.15), 0 6px 0 #2563eb;
+            user-select: none;
+        }
+
+        .digit-box.rolling {
+            animation: bounce 0.08s infinite alternate;
+            color: #60a5fa;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(-3px); }
+            to { transform: translateY(3px); }
+        }
+
+        .btn-stop {
+            background-color: #f97316;
+            color: white;
+            font-family: 'Jua', sans-serif;
+            font-size: clamp(1rem, 1.4vw, 1.3rem);
+            padding: 10px 4px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #c2410c;
+            width: 100%;
+            max-width: 180px;
+            white-space: nowrap;
+            transition: all 0.1s ease;
+        }
+
+        .btn-stop:hover:not(:disabled) { background-color: #ea580c; }
+        .btn-stop:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 #c2410c; }
+        .btn-stop:disabled { background-color: #d1d5db; box-shadow: 0 3px 0 #9ca3af; cursor: not-allowed; color: #9ca3af; }
+
+        .control-panel {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-draw, .btn-all-stop, .btn-view-all-mobile {
+            font-family: 'Jua', sans-serif;
+            font-size: clamp(1.1rem, 1.6vw, 1.5rem);
+            padding: 12px 18px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            flex: 1;
+            min-width: 120px;
+            max-width: 250px;
+            white-space: nowrap;
+            transition: all 0.1s ease;
+        }
+
+        .btn-draw {
+            background-color: #ef4444;
+            color: white;
+            box-shadow: 0 6px 0 #b91c1c, 0 10px 15px rgba(0,0,0,0.2);
+        }
+        .btn-draw:hover:not(:disabled) { background-color: #dc2626; }
+        .btn-draw:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 2px 0 #b91c1c; }
+        .btn-draw:disabled { background-color: #9ca3af; box-shadow: 0 4px 0 #4b5563; cursor: not-allowed; }
+
+        .btn-all-stop {
+            background-color: #8b5cf6;
+            color: white;
+            box-shadow: 0 6px 0 #6d28d9, 0 10px 15px rgba(0,0,0,0.2);
+        }
+        .btn-all-stop:hover:not(:disabled) { background-color: #7c3aed; }
+        .btn-all-stop:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 2px 0 #6d28d9; }
+        .btn-all-stop:disabled { background-color: #d1d5db; box-shadow: 0 3px 0 #9ca3af; cursor: not-allowed; }
+
+        .btn-view-all-mobile {
+            background-color: #0ea5e9;
+            color: white;
+            box-shadow: 0 6px 0 #0284c7, 0 10px 15px rgba(0,0,0,0.2);
+            display: none;
+        }
+
+        .winner-list-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+            max-height: 550px;
+        }
+
+        .winner-list-container::-webkit-scrollbar { width: 8px; }
+        .winner-list-container::-webkit-scrollbar-thumb { background: #34d399; border-radius: 10px; }
+
+        .winner-item {
+            background-color: #ecfdf5;
+            border: 2px solid #a7f3d0;
+            border-radius: 15px;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            font-size: clamp(1.1rem, 1.5vw, 1.4rem);
+            color: #065f46;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            white-space: nowrap;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .winner-rank {
+            background-color: #10b981;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+
+        .winner-code {
+            font-size: 1.5em;
+            letter-spacing: 4px;
+            color: #047857;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .btn-toggle-list {
+            background-color: #0ea5e9;
+            color: white;
+            font-family: 'Jua', sans-serif;
+            font-size: 1.05rem;
+            padding: 10px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+            box-shadow: 0 3px 0 #0284c7;
+            white-space: nowrap;
+        }
+        .btn-toggle-list:hover { background-color: #0284c7; }
+
+        .school-footer {
+            margin-top: 10px;
+            font-size: clamp(0.7rem, 2.2vw, 1.1rem);
+            color: #1e3a8a;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 6px 15px;
+            border-radius: 12px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+            letter-spacing: 0.5px;
+            text-align: center;
+            width: 100%;
+            max-width: 1400px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 당첨 팝업 모달 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border: 8px solid #f59e0b;
+            border-radius: 30px;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            animation: popUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            z-index: 1001;
+            width: 90%;
+            max-width: 450px;
+        }
+
+        @keyframes popUp {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-title { font-size: clamp(2rem, 4vw, 2.8rem); color: #d97706; margin-bottom: 10px; white-space: nowrap; }
+        .modal-code {
+            font-size: clamp(4rem, 10vw, 6.5rem);
+            color: #1d4ed8;
+            letter-spacing: 8px;
+            background: #eff6ff;
+            border: 4px dashed #3b82f6;
+            border-radius: 20px;
+            padding: 10px 30px;
+            margin: 15px 0;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .modal-close-btn {
+            background-color: #10b981;
+            color: white;
+            font-family: 'Jua', sans-serif;
+            font-size: 1.3rem;
+            padding: 10px 30px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #047857;
+            white-space: nowrap;
+        }
+
+        /* 📋 스마트폰 전용 전체 당첨자 팝업 모달 */
+        .all-winners-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 15px;
+        }
+
+        .all-winners-modal-content {
+            background: white;
+            border: 8px solid #10b981;
+            border-radius: 30px;
+            padding: 20px 15px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            width: 95%;
+            max-width: 650px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .all-winners-modal-list {
+            flex: 1;
+            overflow-y: auto;
+            margin: 15px 0;
+            padding-right: 5px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            align-content: flex-start;
+        }
+
+        /* 스마트폰 팝업 내부 당첨 번호 카드 (세로: 2열) */
+        .all-winners-modal-list .winner-item {
+            background-color: #f0fdf4;
+            border: 2px solid #bbf7d0;
+            border-radius: 12px;
+            padding: 10px 5px;
+            margin-bottom: 0;
+            width: calc(50% - 6px);
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .all-winners-modal-list .winner-rank {
+            display: none;
+        }
+        .all-winners-modal-list .winner-code {
+            font-size: 1.6rem;
+            letter-spacing: 3px;
+            color: #065f46;
+        }
+
+        /* 📱 스마트폰 전용 세부 미디어 쿼리 */
+        @media (max-width: 900px) {
+            /* 스마트폰 가로 모드 */
+            @media (orientation: landscape) {
+                .right-section {
+                    display: none; 
+                }
+                .btn-view-all-mobile {
+                    display: inline-block; 
+                }
+                .left-section {
+                    padding: 10px 15px;
+                    min-height: auto;
+                }
+                .slot-machine {
+                    padding: 8px 15px;
+                    margin: 5px 0;
+                    gap: 15px;
+                }
+                .digit-box {
+                    height: 100px;
+                    font-size: 3.5rem;
+                    border-width: 4px;
+                }
+                .btn-stop {
+                    font-size: 0.85rem;
+                    padding: 5px 0;
+                }
+                h1 {
+                    font-size: 1.5rem;
+                    margin-bottom: 2px;
+                }
+                /* 가로모드 팝업에서는 5명씩 배치 (5열) */
+                .all-winners-modal-list .winner-item {
+                    width: calc(20% - 7px);
+                    padding: 8px 2px;
+                }
+                .all-winners-modal-list .winner-code {
+                    font-size: 1.2rem;
+                    letter-spacing: 2px;
+                }
+            }
+
+            /* 스마트폰 세로 모드 */
+            @media (orientation: portrait) {
+                .app-layout {
+                    flex-direction: column-reverse; 
+                    min-height: auto;
+                    gap: 12px;
+                }
+
+                .left-section, .right-section {
+                    min-height: auto;
+                    padding: 12px 10px;
+                }
+
+                .winner-list-container {
+                    max-height: 65px; 
+                    overflow-y: auto;
+                }
+
+                .digit-box {
+                    height: 110px;
+                    font-size: 3.8rem;
+                    border-width: 4px;
+                }
+
+                .slot-machine {
+                    padding: 10px;
+                    gap: 12px;
+                }
+
+                .btn-stop {
+                    font-size: 0.9rem;
+                    padding: 6px 0;
+                }
+            }
+        }
+    </style>
+</head>
+<body onclick="initAudioOnInteraction()">
+
+<div class="app-layout">
+    <!-- 좌측: 슬롯머신 영역 -->
+    <div class="left-section">
+        <div class="header-box">
+            <h1>🎁 경품 추첨 🎁</h1>
+            <button class="btn-reset-target" onclick="promptMaxTarget()">⚙️ 인원 재설정</button>
+        </div>
+        
+        <div class="target-info-badge" id="targetBadge">대상: 1 ~ 30번</div>
+
+        <div class="slot-machine">
+            <div class="slot-column">
+                <div class="digit-box" id="digit1">?</div>
+                <button class="btn-stop" id="stopBtn1" onclick="stopDigit(0)" disabled>1번째 멈춤</button>
+            </div>
+            <div class="slot-column">
+                <div class="digit-box" id="digit2">?</div>
+                <button class="btn-stop" id="stopBtn2" onclick="stopDigit(1)" disabled>2번째 멈춤</button>
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <button class="btn-draw" id="drawBtn" onclick="startSlot()">추첨 시작!</button>
+            <button class="btn-all-stop" id="allStopBtn" onclick="stopAllDigits()" disabled>한꺼번에 멈춤</button>
+            <!-- 가로모드 전용 당첨자 모두보기 버튼 -->
+            <button class="btn-view-all-mobile" onclick="openAllWinnersModal()">당첨자 모두 보기</button>
+        </div>
+    </div>
+
+    <!-- 우측: 당첨자 명단 영역 -->
+    <div class="right-section">
+        <div class="list-title">🏆 당첨자 명단 🏆</div>
+        <div class="winner-list-container" id="winnerList">
+            <!-- 당첨 내역 추가 위치 -->
+        </div>
+        <button class="btn-toggle-list" onclick="openAllWinnersModal()">📋 당첨자 모두 보기 (팝업)</button>
+    </div>
+</div>
+
+<div class="school-footer">
+    ✨ 온마음으로 미래를 여는 행복 김천다수초등학교 ✨
+</div>
+
+<!-- 당첨자 개별 결과 대형 팝업 -->
+<div class="modal-overlay" id="resultModal">
+    <div class="modal-content">
+        <div class="modal-title">🎉 축하합니다! 🎉</div>
+        <div class="modal-code" id="modalCode">00</div>
+        <br>
+        <button class="modal-close-btn" onclick="closeModal()">확인 및 다음 추첨</button>
+    </div>
+</div>
+
+<!-- 📋 전체 당첨자 목록 전용 팝업 모달 -->
+<div class="all-winners-modal-overlay" id="allWinnersModal">
+    <div class="all-winners-modal-content">
+        <div class="list-title">🏆 전체 당첨자 명단 🏆</div>
+        <div class="all-winners-modal-list" id="popupWinnerList">
+            <!-- 팝업에 복사된 명단 위치 -->
+        </div>
+        <button class="modal-close-btn" onclick="closeAllWinnersModal()">닫기</button>
+    </div>
+</div>
+
+<script>
+    let maxTarget = 30; // 기본 인원수
+
+    function promptMaxTarget() {
+        const input = prompt("추첨 대상 전체 인원수를 입력해주세요 (예: 26)", maxTarget);
+        if (input !== null) {
+            const num = parseInt(input.trim(), 10);
+            if (!isNaN(num) && num > 0 && num <= 99) {
+                maxTarget = num;
+                historySet.clear();
+                winnerCount = 0;
+                document.getElementById('winnerList').innerHTML = '';
+                document.getElementById('targetBadge').innerText = `대상: 1 ~ ${maxTarget}번`;
+                document.getElementById('digit1').innerText = '?';
+                document.getElementById('digit2').innerText = '?';
+            } else {
+                alert("1부터 99 사이의 숫자를 입력해주세요.");
+            }
+        }
+    }
+
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx;
+    let bgmInterval = null;
+
+    function initAudio() {
+        if (!audioCtx) audioCtx = new AudioCtx();
+    }
+
+    function initAudioOnInteraction() {
+        initAudio();
+        if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        if (!bgmInterval) {
+            startBGM();
+        }
+    }
+
+    function startBGM() {
+        initAudio();
+        if (bgmInterval) return;
+
+        const melodyNotes = [
+            261.63, 329.63, 392.00, 523.25,
+            293.66, 349.23, 440.00, 587.33,
+            329.63, 392.00, 493.88, 659.25,
+            349.23, 440.00, 523.25, 698.46
+        ];
+        
+        let step = 0;
+
+        bgmInterval = setInterval(() => {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = 'triangle';
+            osc.frequency.value = melodyNotes[step % melodyNotes.length];
+            
+            const now = audioCtx.currentTime;
+            gain.gain.setValueAtTime(0.06, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.18);
+
+            step++;
+        }, 150);
+    }
+
+    function stopBGM() {
+        if (bgmInterval) {
+            clearInterval(bgmInterval);
+            bgmInterval = null;
+        }
+    }
+
+    function playStopSound() {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1046.5, audioCtx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.15);
+    }
+
+    function playTickSound() {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(150 + Math.random() * 50, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.04);
+    }
+
+    function playWowAndFanfare() {
+        initAudio();
+        const now = audioCtx.currentTime;
+
+        const wowOsc = audioCtx.createOscillator();
+        const wowGain = audioCtx.createGain();
+        wowOsc.type = 'sawtooth';
+        wowOsc.frequency.setValueAtTime(300, now);
+        wowOsc.frequency.exponentialRampToValueAtTime(600, now + 0.2);
+        wowOsc.frequency.exponentialRampToValueAtTime(400, now + 0.4);
+        wowGain.gain.setValueAtTime(0.2, now);
+        wowGain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+        wowOsc.connect(wowGain);
+        wowGain.connect(audioCtx.destination);
+        wowOsc.start(now);
+        wowOsc.stop(now + 0.5);
+
+        const bufferSize = audioCtx.sampleRate * 0.4;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+        }
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+        const noiseFilter = audioCtx.createBiquadFilter();
+        noiseFilter.type = 'lowpass';
+        noiseFilter.frequency.setValueAtTime(800, now);
+        noiseFilter.frequency.linearRampToValueAtTime(200, now + 0.4);
+        const noiseGain = audioCtx.createGain();
+        noiseGain.gain.setValueAtTime(0.3, now);
+        noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+        noise.connect(noiseFilter);
+        noiseFilter.connect(noiseGain);
+        noiseGain.connect(audioCtx.destination);
+        noise.start(now);
+
+        const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99];
+        notes.forEach((freq, idx) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.value = freq;
+            const startTime = now + idx * 0.08;
+            gain.gain.setValueAtTime(0.2, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.3);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(startTime);
+            osc.stop(startTime + 0.3);
+        });
+    }
+
+    function triggerTopConfetti() {
+        confetti({
+            particleCount: 180,
+            spread: 120,
+            origin: { y: 0.5 },
+            zIndex: 9999
+        });
+    }
+
+    function openAllWinnersModal() {
+        const mainList = document.getElementById('winnerList');
+        const popupList = document.getElementById('popupWinnerList');
+        popupList.innerHTML = mainList.innerHTML;
+        document.getElementById('allWinnersModal').style.display = 'flex';
+    }
+
+    function closeAllWinnersModal() {
+        document.getElementById('allWinnersModal').style.display = 'none';
+    }
+
+    const historySet = new Set();
+    let winnerCount = 0;
+    let finalNumbers = [];
+    let intervals = [null, null];
+    let isRolling = [false, false];
+    let currentStep = 0;
+
+    /* 지정한 대상 인원수(maxTarget) 범위 내에서 2자리 생성 알고리즘 */
+    function generateSingleCandidate() {
+        const num = Math.floor(Math.random() * maxTarget) + 1; // 1 ~ maxTarget
+        const formatted = String(num).padStart(2, '0');
+        const d1 = parseInt(formatted[0], 10);
+        const d2 = parseInt(formatted[1], 10);
+        return [d1, d2];
+    }
+
+    function getUniqueNumbers() {
+        if (historySet.size >= maxTarget) return null;
+
+        let attempts = 0;
+        while (attempts < 3000) {
+            const candidate = generateSingleCandidate();
+            const code = candidate.join('');
+            if (!historySet.has(code)) {
+                historySet.add(code);
+                return candidate;
+            }
+            attempts++;
+        }
+        return null;
+    }
+
+    function startSlot() {
+        finalNumbers = getUniqueNumbers();
+        if (!finalNumbers) {
+            alert(`⚠️ 모든 대상자(${maxTarget}명)의 추첨이 완료되었습니다!`);
+            return;
+        }
+
+        document.getElementById('drawBtn').disabled = true;
+        document.getElementById('allStopBtn').disabled = false;
+        currentStep = 0;
+
+        startBGM();
+
+        for (let i = 0; i < 2; i++) {
+            const box = document.getElementById(`digit${i+1}`);
+            box.classList.add('rolling');
+            isRolling[i] = true;
+
+            intervals[i] = setInterval(() => {
+                box.innerText = Math.floor(Math.random() * 10);
+                if (i === currentStep) playTickSound();
+            }, 60);
+
+            document.getElementById(`stopBtn${i+1}`).disabled = (i !== 0);
+        }
+    }
+
+    function stopDigit(index) {
+        if (!isRolling[index]) return;
+
+        clearInterval(intervals[index]);
+        isRolling[index] = false;
+
+        const box = document.getElementById(`digit${index+1}`);
+        box.classList.remove('rolling');
+        box.innerText = finalNumbers[index];
+
+        playStopSound();
+        document.getElementById(`stopBtn${index+1}`).disabled = true;
+
+        currentStep = index + 1;
+
+        if (currentStep < 2) {
+            document.getElementById(`stopBtn${currentStep+1}`).disabled = false;
+        } else {
+            finishDraw();
+        }
+    }
+
+    function stopAllDigits() {
+        for (let i = 0; i < 2; i++) {
+            if (isRolling[i]) {
+                clearInterval(intervals[i]);
+                isRolling[i] = false;
+                const box = document.getElementById(`digit${i+1}`);
+                box.classList.remove('rolling');
+                box.innerText = finalNumbers[i];
+                document.getElementById(`stopBtn${i+1}`).disabled = true;
+            }
+        }
+        playStopSound();
+        finishDraw();
+    }
+
+    function finishDraw() {
+        stopBGM();
+        document.getElementById('allStopBtn').disabled = true;
+
+        setTimeout(() => {
+            playWowAndFanfare();
+            triggerTopConfetti();
+            showModal(finalNumbers.join(''));
+            addWinnerToList(finalNumbers.join(''));
+        }, 300);
+    }
+
+    function showModal(code) {
+        document.getElementById('modalCode').innerText = code;
+        document.getElementById('resultModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('resultModal').style.display = 'none';
+        document.getElementById('drawBtn').disabled = false;
+    }
+
+    function addWinnerToList(code) {
+        winnerCount++;
+        const winnerList = document.getElementById('winnerList');
+        
+        const item = document.createElement('div');
+        item.className = 'winner-item';
+        item.innerHTML = `
+            <span class="winner-rank">${winnerCount}번 당첨</span>
+            <span class="winner-code">${code}</span>
+        `;
+
+        winnerList.appendChild(item);
+        winnerList.scrollTop = winnerList.scrollHeight;
+    }
+
+    window.onload = function() {
+        setTimeout(() => {
+            promptMaxTarget();
+        }, 300);
+    };
+</script>
+
+</body>
+</html>
